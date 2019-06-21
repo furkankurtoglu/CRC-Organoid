@@ -255,11 +255,11 @@ void setup_microenvironment( void )
 	
 	
 	// if there are more substrates, resize accordingly 
-	std::vector<double> bc_vector( oxygen_substrate_index , 38.0 ); // 5% o2
+	std::vector<double> bc_vector( 5 , 38.0 ); // 5% o2
 	default_microenvironment_options.Dirichlet_condition_vector = bc_vector;
 	
 	// set initial conditions 
-	default_microenvironment_options.initial_condition_vector = { 38.0 }; 
+	default_microenvironment_options.initial_condition_vector = { 38.0,0,0,0,0 }; 
 	
 	
 	
@@ -278,22 +278,24 @@ void setup_tissue( void )
 
 	double cell_radius = cell_defaults.phenotype.geometry.radius; 
 	double cell_spacing = 0.95 * 2.0 * cell_radius; 
-	
-	double initial_tumor_radius =  parameters.doubles("initial_tumor_radius"); // 250.0; 
+	double organoid_distance = parameters.doubles("organoid_distance");
+	double initial_tumor_radius =  parameters.doubles("initial_tumor_radius");
 
 	std::vector<std::vector<double>> positions = create_cell_sphere_positions(cell_radius,initial_tumor_radius); 
 	std::cout << "creating " << positions.size() << " closely-packed tumor cells ... " << std::endl; 
 	
+
 	// create organoid
 	for( int i=0; i < positions.size(); i++ )
 	{
+		positions[i][1] += organoid_distance;
 		pCell = create_cell(organoid_cell);
 		pCell->assign_position( positions[i] );
 	}
 
-
 	return; 
 }
+
 
 std::vector<std::string> my_coloring_function( Cell* pCell )
 {

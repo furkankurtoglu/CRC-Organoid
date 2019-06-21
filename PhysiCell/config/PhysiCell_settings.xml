@@ -100,12 +100,12 @@
 		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">360</interval>
+			<interval units="min">1</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">1</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -128,7 +128,7 @@
 		<fibroblast_relative_adhesion type="double" units="dimensionless">0.05</fibroblast_relative_adhesion>
 		
 		<initial_tumor_radius type="double" units="dimensionless">50</initial_tumor_radius>
-		
+		<organoid_distance type="double" units="dimensionless">150</organoid_distance>
 		
 		<cell_default_inital_energy type="double" units="au" hidden="false">7.01</cell_default_inital_energy>
 		<cell_default_energy_creation_rate type="double" units="1/min" hidden="false">0.01</cell_default_energy_creation_rate>
