@@ -386,8 +386,7 @@ void macrophage_function( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	// digest virus particles inside me 
 	
-	static double implicit_Euler_constant = 
-		(1.0 + dt * parameters.doubles("virus_digestion_rate") );
+	static double implicit_Euler_constant = (1.0 + dt * parameters.doubles("virus_digestion_rate") );
 	phenotype.molecular.internalized_total_substrates[nVirus] /= implicit_Euler_constant; 
 	
 	// check for contact with a cell

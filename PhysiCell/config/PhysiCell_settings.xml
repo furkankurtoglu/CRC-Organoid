@@ -124,17 +124,29 @@
 		<organoid_cell_relative_adhesion type="double" units="dimensionless">0.05</organoid_cell_relative_adhesion>
 
 		<fibroblast_apoptosis_rate type="double" units="1/min">0.0</fibroblast_apoptosis_rate> 
-		<fibroblast_relative_cycle_entry_rate type="double" units="dimensionless">0.1</fibroblast_relative_cycle_entry_rate>
+		<fibroblast_relative_cycle_entry_rate type="double" units="dimensionless">0.0</fibroblast_relative_cycle_entry_rate>
 		<fibroblast_relative_adhesion type="double" units="dimensionless">0.05</fibroblast_relative_adhesion>
 		
 		<initial_tumor_radius type="double" units="dimensionless">50</initial_tumor_radius>
-		<organoid_distance type="double" units="dimensionless">150</organoid_distance>
+		<organoid_distance type="double" units="dimensionless">930</organoid_distance>
+		
+		<apoptosis_rate type="double" units="dimensionless">9e99</apoptosis_rate>
+		<proliferation_rate type="double" units="dimensionless">9e99</proliferation_rate>
 		
 		<cell_default_inital_energy type="double" units="au" hidden="false">7.01</cell_default_inital_energy>
 		<cell_default_energy_creation_rate type="double" units="1/min" hidden="false">0.01</cell_default_energy_creation_rate>
 		<cell_default_energy_use_rate type="double" units="mol" hidden="false">0.02</cell_default_energy_use_rate>	
 		<cell_default_cycle_energy_threshold type="double" units="1/min" hidden="false">10.0</cell_default_cycle_energy_threshold>
 		<cell_default_death_energy_threshold type="double" units="1/min" hidden="false">6</cell_default_death_energy_threshold>
+		
+		<k_aerobe type="double" units="1/min" hidden="false">0</k_aerobe>
+		<k_anaerobe type="double" units="1/min" hidden="false">0</k_anaerobe>
+		<k_glut type="double" units="1/min" hidden="false">0</k_glut>
+		<k_usage type="double" units="1/min" hidden="false">0</k_usage>
+		<alpha type="double" units="1/min" hidden="false">0</alpha>
+		<beta type="double" units="1/min" hidden="false">0</beta>
+		<gamma type="double" units="1/min" hidden="false">0</gamma>		
+		
 	</user_parameters>
 	
 	
