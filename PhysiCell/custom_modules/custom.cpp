@@ -200,7 +200,6 @@ void create_cell_types( void )
 
 void setup_microenvironment( void )
 {
-	// ---- START -- Setting Microenvironment -- START ---- //
 	// make sure to override and go back to 2D 
 	if( default_microenvironment_options.simulate_2D == true )
 	{
@@ -221,42 +220,27 @@ void setup_microenvironment( void )
 	default_microenvironment_options.track_internalized_substrates_in_each_agent = true;
 	
 
-	// ---- END -- Setting Microenvironment -- END ---- //	
+	// ---- START -- Adding Substrates to Microenvironment -- START ---- //	
 	
-	int oxygen_substrate_index = microenvironment.find_density_index( "oxygen" ); 
-	int glucose_substrate_index = microenvironment.find_density_index( "glucose" );
-	int lactate_substrate_index = microenvironment.find_density_index( "lactate" );
-	int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" );
-
-
-    if( glucose_substrate_index < 0 )
-    {
-        pME->add_density( "glucose", "dimensionless" , 1.6e3 , 0.1 );
-        glucose_substrate_index = pME->find_density_index( "glucose" );
-        default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
-        default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = true;
-    }
-	
-    if( lactate_substrate_index < 0 )
-    {
-        pME->add_density( "lactate", "dimensionless" , 1.6e3 , 0.1 );
-        lactate_substrate_index = pME->find_density_index( "lactate" );
-        default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
-        default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
-    }
+	pME->add_density( "glucose", "dimensionless" , 1.6e3 , 0.1 );
+	double glucose_substrate_index = pME->find_density_index( "glucose" );
+	default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
+	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = true;
 	
 	
-    if( glutamine_substrate_index < 0 )
-    {
-        pME->add_density( "glutamine", "dimensionless" , 1.6e3 , 0.1 );
-        glutamine_substrate_index = pME->find_density_index( "glutamine" );
-        default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
-        default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = true;
-    }	
+	pME->add_density( "lactate", "dimensionless" , 1.6e3 , 0.1 );
+	double lactate_substrate_index = pME->find_density_index( "lactate" );
+	default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
+	default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
 	
-	// ---- END -- Setting Microenvironment -- END ---- //
 	
-
+	pME->add_density( "glutamine", "dimensionless" , 1.6e3 , 0.1 );
+	double glutamine_substrate_index = pME->find_density_index( "glutamine" );
+	default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
+	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = true;
+	
+	// ---- END -- Adding Substrates to Microenvironment -- END ---- //
+	
 	
 	// set initial conditions 
 	default_microenvironment_options.initial_condition_vector = { 38.0,10.0,0.0,10.0 }; 

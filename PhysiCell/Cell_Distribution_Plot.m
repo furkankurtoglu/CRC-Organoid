@@ -5,7 +5,7 @@ cd output/
 
 
 %%
-MCDS = read_MultiCellDS_xml( 'output00000005.xml'); 
+MCDS = read_MultiCellDS_xml( 'output00000060.xml'); 
 % simple_plot( MCDS, MCDS.discrete_cells.live_cells, 'r' )
 %%
 
