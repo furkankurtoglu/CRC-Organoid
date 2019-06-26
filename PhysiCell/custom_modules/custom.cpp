@@ -222,19 +222,19 @@ void setup_microenvironment( void )
 
 	// ---- START -- Adding Substrates to Microenvironment -- START ---- //	
 	
-	pME->add_density( "glucose", "dimensionless" , 1.6e3 , 0.1 );
+	pME->add_density( "glucose", "dimensionless" , 1.6e3 , 0.0 );
 	double glucose_substrate_index = pME->find_density_index( "glucose" );
 	default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = true;
 	
 	
-	pME->add_density( "lactate", "dimensionless" , 1.6e3 , 0.1 );
+	pME->add_density( "lactate", "dimensionless" , 1.6e3 , 0.0 );
 	double lactate_substrate_index = pME->find_density_index( "lactate" );
 	default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
 	default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
 	
 	
-	pME->add_density( "glutamine", "dimensionless" , 1.6e3 , 0.1 );
+	pME->add_density( "glutamine", "dimensionless" , 1.6e3 , 0.0 );
 	double glutamine_substrate_index = pME->find_density_index( "glutamine" );
 	default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = true;
