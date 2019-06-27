@@ -175,6 +175,9 @@ void create_cell_types( void )
 	
 	// Set Energy Function
 	organoid_cell.functions.update_phenotype = tumor_energy_update_function;
+	organoid_cell.phenotype.molecular.sync_to_microenvironment( &microenvironment );
+	
+	
 	// ---- END -- Organoid Cell Definitions -- END ---- //
 	
 	
@@ -222,22 +225,22 @@ void setup_microenvironment( void )
 
 	// ---- START -- Adding Substrates to Microenvironment -- START ---- //	
 	
-	pME->add_density( "glucose", "dimensionless" , 1.6e3 , 0.0 );
-	double glucose_substrate_index = pME->find_density_index( "glucose" );
+	pME->add_density( "glucose", "micromolar" , 1.6e3 , 0.0 );
+	int glucose_substrate_index = pME->find_density_index( "glucose" );
 	default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
-	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = true;
+	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = false;
 	
 	
-	pME->add_density( "lactate", "dimensionless" , 1.6e3 , 0.0 );
-	double lactate_substrate_index = pME->find_density_index( "lactate" );
+	pME->add_density( "lactate", "micromolar" , 1.6e3 , 0.0 );
+	int lactate_substrate_index = pME->find_density_index( "lactate" );
 	default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
 	default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
 	
 	
-	pME->add_density( "glutamine", "dimensionless" , 1.6e3 , 0.0 );
-	double glutamine_substrate_index = pME->find_density_index( "glutamine" );
+	pME->add_density( "glutamine", "micromolar" , 1.6e3 , 0.0 );
+	int glutamine_substrate_index = pME->find_density_index( "glutamine" );
 	default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
-	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = true;
+	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = false;
 	
 	// ---- END -- Adding Substrates to Microenvironment -- END ---- //
 	
@@ -270,7 +273,7 @@ void setup_tissue( void )
 		for (int j= -500; j<500; j+=10)
 		{			
 			pCell = create_cell(fibro_cell);
-			pCell->assign_position(i,j,-800);	
+			pCell->assign_position(i,-800,j);	
 		}
 	}
 	
@@ -284,7 +287,7 @@ void setup_tissue( void )
 	// create organoid
 	for( int i=0; i < positions.size(); i++ )
 	{
-		positions[i][2] += organoid_distance-730;
+		positions[i][1] += organoid_distance-730;
 		pCell = create_cell(organoid_cell);
 		pCell->assign_position( positions[i] );
 	}
@@ -305,8 +308,15 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 	if( pCell->phenotype.death.dead == false && 
 		pCell->type == 1 )
 	{
-		 output[0] = "black"; 
-		 output[2] = "black"; 	
+		 output[0] = "red"; 
+		 output[2] = "darkred"; 	
+	}
+	
+	if( pCell->phenotype.death.dead == false && 
+		pCell->type == 2 )
+	{
+		 output[0] = "blue"; 
+		 output[2] = "darkblue"; 	
 	}
 	
 	return output; 

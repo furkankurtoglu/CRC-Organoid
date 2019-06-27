@@ -76,10 +76,10 @@
 	<domain>
 		<x_min>-500</x_min>
 		<x_max>500</x_max>
-		<y_min>-500</y_min>
-		<y_max>500</y_max>
-		<z_min>-800</z_min>
-		<z_max>800</z_max>
+		<y_min>-800</y_min>
+		<y_max>800</y_max>
+		<z_min>-500</z_min>
+		<z_max>500</z_max>
 		<dx>20</dx>
 		<dy>20</dy>
 		<dz>20</dz>
@@ -127,7 +127,7 @@
 		<fibroblast_relative_cycle_entry_rate type="double" units="dimensionless">0.0</fibroblast_relative_cycle_entry_rate>
 		<fibroblast_relative_adhesion type="double" units="dimensionless">0.05</fibroblast_relative_adhesion>
 		
-		<initial_tumor_radius type="double" units="dimensionless">50</initial_tumor_radius>
+		<initial_tumor_radius type="double" units="dimensionless">100</initial_tumor_radius>
 		<organoid_distance type="double" units="dimensionless">930</organoid_distance>
 		
 		<apoptosis_rate type="double" units="dimensionless">9e99</apoptosis_rate>

@@ -75,7 +75,8 @@ void tumor_cell_phenotype_with_oncoprotein( Cell* pCell, Phenotype& phenotype, d
 
 // any additional cell types (beyond cell_defaults)
 
-extern Cell_Definition motile_cell; 
+extern Cell_Definition organoid_cell; 
+extern Cell_Definition fibro_cell; 
 
 // custom cell phenotype functions could go here 
 
@@ -90,3 +91,5 @@ void setup_microenvironment( void );
 // custom pathology coloring function 
 
 std::vector<std::string> my_coloring_function( Cell* );
+void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt );
+std::vector<std::vector<double>> create_cell_sphere_positions(double cell_radius, double sphere_radius);

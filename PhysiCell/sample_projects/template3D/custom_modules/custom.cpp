@@ -69,7 +69,8 @@
 
 // declare cell definitions here 
 
-Cell_Definition motile_cell; 
+Cell_Definition organoid_cell;
+Cell_Definition fibro_cell;
 
 void create_cell_types( void )
 {
@@ -85,26 +86,19 @@ void create_cell_types( void )
 	initialize_default_cell_definition();
 	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
 	
+	// ---- START -- Default Cell Definitions -- START ---- //
 	// Name the default cell type 
 	
 	cell_defaults.type = 0; 
-	cell_defaults.name = "tumor cell"; 
+	cell_defaults.name = "default cell"; 
 	
 	// set default cell cycle model 
 
-	cell_defaults.functions.cycle_model = flow_cytometry_separated_cycle_model; 
+	cell_defaults.functions.cycle_model = live; 
 	
 	// set default_cell_functions; 
 	
-	cell_defaults.functions.update_phenotype = update_cell_and_death_parameters_O2_based; 
-	
-	// only needed for a 2-D simulation: 
-	
-	/*
-	cell_defaults.functions.set_orientation = up_orientation; 
-	cell_defaults.phenotype.geometry.polarity = 1.0;
-	cell_defaults.phenotype.motility.restrict_to_2D = true; 
-	*/
+	cell_defaults.functions.update_phenotype = NULL; 
 	
 	// make sure the defaults are self-consistent. 
 	
@@ -117,74 +111,102 @@ void create_cell_types( void )
 	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
 	int oxygen_substrate_index = microenvironment.find_density_index( "oxygen" ); 
+	int glucose_substrate_index = microenvironment.find_density_index( "glucose" );
+	int lactate_substrate_index = microenvironment.find_density_index( "lactate" );
+	int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" );
+	
 
-	int G0G1_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::G0G1_phase );
-	int S_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::S_phase );
+	int start_index = live.find_phase_index( PhysiCell_constants::live );
+	int end_index = live.find_phase_index( PhysiCell_constants::live );
 
 	// initially no necrosis 
 	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
 
 	// set oxygen uptake / secretion parameters for the default cell type 
-	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 10; 
-	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0; 
-	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 38; 
+	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 10.0; 
+	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0.0; 
+	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 0.0; 
 	
-	// add custom data here, if any 
+	cell_defaults.phenotype.secretion.uptake_rates[glucose_substrate_index] = 10.0; 
+	cell_defaults.phenotype.secretion.secretion_rates[glucose_substrate_index] = 0.0; 
+	cell_defaults.phenotype.secretion.saturation_densities[glucose_substrate_index] = 0.0; 
+	
+	cell_defaults.phenotype.secretion.uptake_rates[lactate_substrate_index] = 10.0; 
+	cell_defaults.phenotype.secretion.secretion_rates[lactate_substrate_index] = 0.0; 
+	cell_defaults.phenotype.secretion.saturation_densities[lactate_substrate_index] = 0.0; 
+	
+	cell_defaults.phenotype.secretion.uptake_rates[glutamine_substrate_index] = 10.0; 
+	cell_defaults.phenotype.secretion.secretion_rates[glutamine_substrate_index] = 0.0; 
+	cell_defaults.phenotype.secretion.saturation_densities[glutamine_substrate_index] = 0.0;
+	
+	cell_defaults.custom_data.add_variable( "energy", "dimensionless" , parameters.doubles("cell_default_inital_energy") ); 
+	cell_defaults.custom_data.add_variable( "energy_creation_rate", "1/min" , parameters.doubles("cell_default_energy_creation_rate") ); 
+	cell_defaults.custom_data.add_variable( "energy_use_rate", "1/min" , parameters.doubles("cell_default_energy_use_rate") ); 
+	cell_defaults.custom_data.add_variable( "cycle_energy_threshold", "dimensionless" , parameters.doubles("cell_default_cycle_energy_threshold") ); 
+	cell_defaults.custom_data.add_variable( "death_energy_threshold", "dimensionless" , parameters.doubles("cell_default_death_energy_threshold") );
+	
+	cell_defaults.custom_data.add_variable( "k_aerobe", "dimensionless" , parameters.doubles("k_aerobe") );
+	cell_defaults.custom_data.add_variable( "k_anaerobe", "dimensionless" , parameters.doubles("k_anaerobe") );
+	cell_defaults.custom_data.add_variable( "k_glut", "dimensionless" , parameters.doubles("k_glut") );
+	cell_defaults.custom_data.add_variable( "k_usage", "dimensionless" , parameters.doubles("k_usage") );
+	cell_defaults.custom_data.add_variable( "alpha", "dimensionless" , parameters.doubles("alpha") );
+	cell_defaults.custom_data.add_variable( "beta", "dimensionless" , parameters.doubles("beta") );
+	cell_defaults.custom_data.add_variable( "gamma", "dimensionless" , parameters.doubles("gamma") );
+	// ---- END -- Default Cell Definitions -- END ---- //
 	
 	
 	
-	// Now, let's define another cell type. 
-	// It's best to just copy the default and modify it. 
 	
-	// make this cell type randomly motile, less adhesive, greater survival, 
-	// and less proliferative 
 	
-	motile_cell = cell_defaults; 
-	motile_cell.type = 1; 
-	motile_cell.name = "motile tumor cell"; 
+	// ---- START -- Organoid Cell Definitions -- START ---- //
 	
-	// make sure the new cell type has its own reference phenotyhpe
+	organoid_cell = cell_defaults; 
+	organoid_cell.type = 1;
+	organoid_cell.name = "organoid cell"; 
 	
-	motile_cell.parameters.pReference_live_phenotype = &( motile_cell.phenotype ); 
-	
-	// enable random motility 
-	motile_cell.phenotype.motility.is_motile = true; 
-	motile_cell.phenotype.motility.persistence_time = parameters.doubles( "motile_cell_persistence_time" ); // 15.0; // 15 minutes
-	motile_cell.phenotype.motility.migration_speed = parameters.doubles( "motile_cell_migration_speed" ); // 0.25; // 0.25 micron/minute 
-	motile_cell.phenotype.motility.migration_bias = 0.0;// completely random 
-	
+	// make sure the new cell type has its own reference phenotype
+	organoid_cell.parameters.pReference_live_phenotype = &( organoid_cell.phenotype ); 
 	// Set cell-cell adhesion to 5% of other cells 
-	motile_cell.phenotype.mechanics.cell_cell_adhesion_strength *= 
-		parameters.doubles( "motile_cell_relative_adhesion" ); // 0.05; 
+	// organoid_cell.phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "organoid_cell_relative_adhesion" ); // 0.05; 
 	
 	// Set apoptosis to zero 
-	motile_cell.phenotype.death.rates[apoptosis_model_index] = 
-		parameters.doubles( "motile_cell_apoptosis_rate" ); // 0.0; 
+	organoid_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "organoid_cell_apoptosis_rate" ); // 0.0; 
+	organoid_cell.phenotype.cycle.data.transition_rate(start_index,end_index) *= parameters.doubles( "organoid_cell_relative_cycle_entry_rate" ); // 0.0;
 	
-	// Set proliferation to 10% of other cells. 
-	// Alter the transition rate from G0G1 state to S state
-	motile_cell.phenotype.cycle.data.transition_rate(G0G1_index,S_index) *= 
-		parameters.doubles( "motile_cell_relative_cycle_entry_rate" ); // 0.1; 
+	// Set Energy Function
+	organoid_cell.functions.update_phenotype = tumor_energy_update_function;
+	// ---- END -- Organoid Cell Definitions -- END ---- //
+	
+	
+	
+	// ---- START -- Fibroblast Definitions -- START ---- //
+	fibro_cell = cell_defaults; 
+	fibro_cell.type = 2; 
+	fibro_cell.name = "fibroblast"; 
+	
+	// make sure the new cell type has its own reference phenotype
+	
+	fibro_cell.parameters.pReference_live_phenotype = &( fibro_cell.phenotype ); 
+	// Set cell-cell adhesion to 5% of other cells 
+	// fibro_cell.phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "fibroblast_relative_adhesion" ); // 0.05; 
+	
+	// Set apoptosis to zero 
+	fibro_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "fibroblast_apoptosis_rate" ); // 0.0; 
+	fibro_cell.phenotype.cycle.data.transition_rate(start_index,end_index) *= parameters.doubles( "fibroblast_relative_cycle_entry_rate" ); // 0.0;
+	// ---- END -- Fibroblast Cell Definitions -- END ---- //	
 	
 	return; 
 }
 
 void setup_microenvironment( void )
 {
-	// set domain parameters 
-	
-/*	
-	default_microenvironment_options.X_range = {-500, 500}; 
-	default_microenvironment_options.Y_range = {-500, 500}; 
-	default_microenvironment_options.Z_range = {-500, 500}; 
-*/	
 	// make sure to override and go back to 2D 
 	if( default_microenvironment_options.simulate_2D == true )
 	{
 		std::cout << "Warning: overriding XML config option and setting to 3D!" << std::endl; 
 		default_microenvironment_options.simulate_2D = false; 
 	}	
-	
+	Microenvironment* pME = get_default_microenvironment();
 	
 	// no gradients need for this example 
 
@@ -194,15 +216,36 @@ void setup_microenvironment( void )
 
 	default_microenvironment_options.outer_Dirichlet_conditions = true;
 	
-	// if there are more substrates, resize accordingly 
-	std::vector<double> bc_vector( 1 , 38.0 ); // 5% o2
-	default_microenvironment_options.Dirichlet_condition_vector = bc_vector;
+	// set tracking internal substrates on
+	default_microenvironment_options.track_internalized_substrates_in_each_agent = true;
+	
+
+	// ---- START -- Adding Substrates to Microenvironment -- START ---- //	
+	
+	pME->add_density( "glucose", "micromolar" , 1.6e3 , 0.0 );
+	double glucose_substrate_index = pME->find_density_index( "glucose" );
+	default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
+	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = false;
+	
+	
+	pME->add_density( "lactate", "micromolar" , 1.6e3 , 0.0 );
+	double lactate_substrate_index = pME->find_density_index( "lactate" );
+	default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
+	default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
+	
+	
+	pME->add_density( "glutamine", "micromolar" , 1.6e3 , 0.0 );
+	double glutamine_substrate_index = pME->find_density_index( "glutamine" );
+	default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
+	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = false;
+	
+	// ---- END -- Adding Substrates to Microenvironment -- END ---- //
+	
 	
 	// set initial conditions 
-	default_microenvironment_options.initial_condition_vector = { 38.0 }; 
+	default_microenvironment_options.initial_condition_vector = { 38.0,10.0,0.0,10.0 }; 
 	
 	// initialize BioFVM 
-	
 	initialize_microenvironment(); 	
 	
 	return; 
@@ -211,25 +254,45 @@ void setup_microenvironment( void )
 void setup_tissue( void )
 {
 	// create some cells near the origin
+	// ---- START -- Setting Up Fibroblast Surface -- START ---- //
 	
-	Cell* pC;
+	Cell* pCell;
 
-	pC = create_cell(); 
-	pC->assign_position( 0.0, 0.0, 0.0 );
+	double cell_radius = cell_defaults.phenotype.geometry.radius; 
+	double cell_spacing = 0.95 * 2.0 * cell_radius; 
+	double organoid_distance = parameters.doubles("organoid_distance");
+	double initial_tumor_radius =  parameters.doubles("initial_tumor_radius");
+	
+	std::cout << "creating fibroblasts" << std::endl;
+	
+	for (int i= -500; i<500; i+=10)
+	{
+		for (int j= -500; j<500; j+=10)
+		{			
+			pCell = create_cell(fibro_cell);
+			pCell->assign_position(i,j,-800);	
+		}
+	}
+	
+	// ---- END -- Setting Up Fibroblast Surface -- END ---- //
 
-	pC = create_cell(); 
-	pC->assign_position( -100.0, 0.0, 1.0 );
-	
-	pC = create_cell(); 
-	pC->assign_position( 0, 100.0, -7.0 );
-	
-	// now create a motile cell 
-	
-	pC = create_cell( motile_cell ); 
-	pC->assign_position( 15.0, -18.0, 3.0 );
+
+
+	// ---- START -- Setting Up Organoid -- START ---- //
+	std::vector<std::vector<double>> positions = create_cell_sphere_positions(cell_radius,initial_tumor_radius); 
+	std::cout << "creating " << positions.size() << " closely-packed organoid cells ... " << std::endl; 
+	// create organoid
+	for( int i=0; i < positions.size(); i++ )
+	{
+		positions[i][1] += organoid_distance-730;
+		pCell = create_cell(organoid_cell);
+		pCell->assign_position( positions[i] );
+	}
+	// ---- END -- Setting Up Organoid -- END ---- //
 
 	return; 
 }
+
 
 std::vector<std::string> my_coloring_function( Cell* pCell )
 {
@@ -247,4 +310,110 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 	}
 	
 	return output; 
+}
+
+
+void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt )
+{
+	
+	// ---- START -- Tumor Function -- START ---- //
+	Microenvironment* pME = get_default_microenvironment();
+	
+	static int oxygen_substrate_index = microenvironment.find_density_index( "oxygen" ); 
+	static int glucose_substrate_index = microenvironment.find_density_index( "glucose" );
+	static int lactate_substrate_index = microenvironment.find_density_index( "lactate" );
+	static int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" );
+	
+	std::cout<< phenotype.molecular.internalized_total_substrates[oxygen_substrate_index] << std::endl;
+	std::cout<< phenotype.molecular.internalized_total_substrates[glucose_substrate_index] << std::endl;
+	std::cout<< phenotype.molecular.internalized_total_substrates[lactate_substrate_index] << std::endl;
+	std::cout<< phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] << std::endl;
+
+	static int nE = pCell->custom_data.find_variable_index( "energy" ); 
+	static int nA = pCell->custom_data.find_variable_index( "energy_creation_rate" ); 
+	static int nB = pCell->custom_data.find_variable_index( "energy_use_rate" );
+	static int nBirth = pCell->custom_data.find_variable_index( "cycle_energy_threshold" );  
+	static int nDeath = pCell->custom_data.find_variable_index( "death_energy_threshold" );
+	
+	static int nk_aerobe = pCell->custom_data.find_variable_index( "k_aerobe" );
+	static int nk_anaerobe = pCell->custom_data.find_variable_index( "k_anaerobe" );
+	static int nk_glut = pCell->custom_data.find_variable_index( "k_glut" );
+	static int nk_usage = pCell->custom_data.find_variable_index( "k_usage" );
+	static int nalpha = pCell->custom_data.find_variable_index( "alpha" );
+	static int nbeta = pCell->custom_data.find_variable_index( "beta" );
+	static int ngamma = pCell->custom_data.find_variable_index( "gamma" );
+	
+	int internal_oxygen = phenotype.molecular.internalized_total_substrates[oxygen_substrate_index];
+	int internal_glucose = phenotype.molecular.internalized_total_substrates[glucose_substrate_index];
+	int internal_lactate = phenotype.molecular.internalized_total_substrates[lactate_substrate_index];
+	int internal_glutamine = phenotype.molecular.internalized_total_substrates[glutamine_substrate_index];
+	
+	
+	// Energy function
+	pCell->custom_data[nE] += dt*(internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] + internal_glucose * pCell->custom_data[nk_anaerobe] + internal_glutamine * pCell->custom_data[nk_glut] - pCell->custom_data[nE] * pCell->custom_data[nk_usage]);
+	
+	// Metabolite concentrations (Consuming & Producing)
+	phenotype.molecular.internalized_total_substrates[glucose_substrate_index] += dt*( -1.0 * internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] * pCell->custom_data[nalpha] - internal_glucose * pCell->custom_data[nk_anaerobe] * pCell->custom_data[nbeta]);
+	phenotype.molecular.internalized_total_substrates[oxygen_substrate_index] += dt*( -1.0 * internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] * pCell->custom_data[nalpha]);
+	phenotype.molecular.internalized_total_substrates[lactate_substrate_index] += dt*(internal_glucose * pCell->custom_data[nk_anaerobe] * pCell->custom_data[nbeta]);
+	phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] += dt*( -1.0 * internal_glutamine * pCell->custom_data[nk_glut] * pCell->custom_data[ngamma]);
+	
+	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
+	static int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
+	static int ncycle_End_i = live.find_phase_index( PhysiCell_constants::live );
+	static int ncycle_Start_i = live.find_phase_index( PhysiCell_constants::live );
+	
+
+	// No Proliferation, Apoptosis, and Necrosis
+ 	phenotype.death.rates[necrosis_model_index] = 0.0; 
+	phenotype.cycle.data.transition_rate(ncycle_Start_i,ncycle_End_i) = 0.0;
+	phenotype.death.rates[apoptosis_model_index] = 0.0;
+
+	// die if energy is low 
+ 	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
+	{
+		phenotype.death.rates[apoptosis_model_index] = parameters.doubles("apoptosis_rate"); 
+	}
+
+	if( pCell->custom_data[nE] > pCell->custom_data[nBirth])
+	{
+		phenotype.cycle.data.transition_rate( ncycle_Start_i,ncycle_End_i ) = parameters.doubles("proliferation_rate"); 
+		
+	}
+
+	// ---- END -- Tumor Function -- END ---- //
+	return;
+}
+
+
+
+std::vector<std::vector<double>> create_cell_sphere_positions(double cell_radius, double sphere_radius)
+{
+	std::vector<std::vector<double>> cells;
+	int xc=0,yc=0,zc=0;
+	double x_spacing= cell_radius*sqrt(3);
+	double y_spacing= cell_radius*2;
+	double z_spacing= cell_radius*sqrt(3);
+	
+	std::vector<double> tempPoint(3,0.0);
+	// std::vector<double> cylinder_center(3,0.0);
+	
+	for(double z=-sphere_radius;z<sphere_radius;z+=z_spacing, zc++)
+	{
+		for(double x=-sphere_radius;x<sphere_radius;x+=x_spacing, xc++)
+		{
+			for(double y=-sphere_radius;y<sphere_radius;y+=y_spacing, yc++)
+			{
+				tempPoint[0]=x + (zc%2) * 0.5 * cell_radius;
+				tempPoint[1]=y + (xc%2) * cell_radius;
+				tempPoint[2]=z;
+				
+				if(sqrt(norm_squared(tempPoint))< sphere_radius)
+				{ cells.push_back(tempPoint); }
+			}
+			
+		}
+	}
+	return cells;
+	
 }
