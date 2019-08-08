@@ -120,7 +120,8 @@
 		
 		<!-- organoid cell type parameters --> 
 		<organoid_cell_apoptosis_rate type="double" units="1/min">0.0</organoid_cell_apoptosis_rate> 
-		<organoid_cell_relative_cycle_entry_rate type="double" units="dimensionless">0.0</organoid_cell_relative_cycle_entry_rate>
+		<organoid_cell_r01 type="double" units="dimensionless">0.0</organoid_cell_r01>
+		<organoid_cell_r10 type="double" units="dimensionless">0.5</organoid_cell_r10>
 		<organoid_cell_relative_adhesion type="double" units="dimensionless">0.05</organoid_cell_relative_adhesion>
 
 		<fibroblast_apoptosis_rate type="double" units="1/min">0.0</fibroblast_apoptosis_rate> 
@@ -145,7 +146,7 @@
 		<k_usage type="double" units="1/min" hidden="false">0</k_usage>
 		<alpha type="double" units="1/min" hidden="false">0</alpha>
 		<beta type="double" units="1/min" hidden="false">0</beta>
-		<gamma type="double" units="1/min" hidden="false">0</gamma>		
+		<gamma type="double" units="1/min" hidden="false">0</gamma>	
 		
 	</user_parameters>
 	

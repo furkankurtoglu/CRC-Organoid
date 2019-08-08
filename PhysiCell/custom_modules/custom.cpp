@@ -94,7 +94,7 @@ void create_cell_types( void )
 	
 	// set default cell cycle model 
 
-	cell_defaults.functions.cycle_model = live; 
+	cell_defaults.functions.cycle_model = Ki67_basic; 
 	
 	// set default_cell_functions; 
 	
@@ -116,8 +116,8 @@ void create_cell_types( void )
 	int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" );
 	
 
-	int start_index = live.find_phase_index( PhysiCell_constants::live );
-	int end_index = live.find_phase_index( PhysiCell_constants::live );
+	int i_Ki67_negative = live.find_phase_index( PhysiCell_constants::Ki67_negative );
+	int i_Ki67_positive = live.find_phase_index(  PhysiCell_constants::Ki67_positive );
 
 	// initially no necrosis 
 	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
@@ -171,7 +171,10 @@ void create_cell_types( void )
 	
 	// Set apoptosis to zero 
 	organoid_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "organoid_cell_apoptosis_rate" ); // 0.0; 
-	organoid_cell.phenotype.cycle.data.transition_rate(start_index,end_index) *= parameters.doubles( "organoid_cell_relative_cycle_entry_rate" ); // 0.0;
+	organoid_cell.phenotype.cycle.data.transition_rate(i_Ki67_negative,i_Ki67_positive) *= parameters.doubles( "organoid_cell_r01" );
+	organoid_cell.phenotype.cycle.data.transition_rate(i_Ki67_positive,i_Ki67_negative) *= parameters.doubles( "organoid_cell_r10" );
+	
+	
 	
 	// Set Energy Function
 	organoid_cell.functions.update_phenotype = tumor_energy_update_function;
@@ -225,19 +228,19 @@ void setup_microenvironment( void )
 
 	// ---- START -- Adding Substrates to Microenvironment -- START ---- //	
 	
-	pME->add_density( "glucose", "micromolar" , 1.6e3 , 0.0 );
+	pME->add_density( "glucose", "micromolar" , 1.6e3 , 0.01 );
 	int glucose_substrate_index = pME->find_density_index( "glucose" );
 	default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = false;
 	
 	
-	pME->add_density( "lactate", "micromolar" , 1.6e3 , 0.0 );
+	pME->add_density( "lactate", "micromolar" , 1.6e3 , 0.01 );
 	int lactate_substrate_index = pME->find_density_index( "lactate" );
 	default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
 	default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
 	
 	
-	pME->add_density( "glutamine", "micromolar" , 1.6e3 , 0.0 );
+	pME->add_density( "glutamine", "micromolar" , 1.6e3 , 0.01 );
 	int glutamine_substrate_index = pME->find_density_index( "glutamine" );
 	default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = false;
@@ -353,16 +356,16 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	static int nbeta = pCell->custom_data.find_variable_index( "beta" );
 	static int ngamma = pCell->custom_data.find_variable_index( "gamma" );
 	
-	int internal_oxygen = phenotype.molecular.internalized_total_substrates[oxygen_substrate_index];
-	int internal_glucose = phenotype.molecular.internalized_total_substrates[glucose_substrate_index];
-	int internal_lactate = phenotype.molecular.internalized_total_substrates[lactate_substrate_index];
-	int internal_glutamine = phenotype.molecular.internalized_total_substrates[glutamine_substrate_index];
+	double internal_oxygen = phenotype.molecular.internalized_total_substrates[oxygen_substrate_index];
+	double internal_glucose = phenotype.molecular.internalized_total_substrates[glucose_substrate_index];
+	double internal_lactate = phenotype.molecular.internalized_total_substrates[lactate_substrate_index];
+	double internal_glutamine = phenotype.molecular.internalized_total_substrates[glutamine_substrate_index];
 	
 	
 	// Energy function
 	pCell->custom_data[nE] += dt*(internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] + internal_glucose * pCell->custom_data[nk_anaerobe] + internal_glutamine * pCell->custom_data[nk_glut] - pCell->custom_data[nE] * pCell->custom_data[nk_usage]);
 	
-	// Metabolite concentrations (Consuming & Producing)
+	// Metabolite reactions (Consuming & Producing Internalized Metabolites)
 	phenotype.molecular.internalized_total_substrates[glucose_substrate_index] += dt*( -1.0 * internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] * pCell->custom_data[nalpha] - internal_glucose * pCell->custom_data[nk_anaerobe] * pCell->custom_data[nbeta]);
 	phenotype.molecular.internalized_total_substrates[oxygen_substrate_index] += dt*( -1.0 * internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] * pCell->custom_data[nalpha]);
 	phenotype.molecular.internalized_total_substrates[lactate_substrate_index] += dt*(internal_glucose * pCell->custom_data[nk_anaerobe] * pCell->custom_data[nbeta]);
@@ -373,11 +376,12 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	static int ncycle_End_i = live.find_phase_index( PhysiCell_constants::live );
 	static int ncycle_Start_i = live.find_phase_index( PhysiCell_constants::live );
 	
-
-	// No Proliferation, Apoptosis, and Necrosis
- 	phenotype.death.rates[necrosis_model_index] = 0.0; 
-	phenotype.cycle.data.transition_rate(ncycle_Start_i,ncycle_End_i) = 0.0;
-	phenotype.death.rates[apoptosis_model_index] = 0.0;
+	
+	if (phenotype.cycle.data.current_phase_index == 0)
+	{
+		if(
+	}
+	
 
 	// die if energy is low 
  	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
