@@ -144,6 +144,8 @@ void create_cell_types( void )
 	cell_defaults.custom_data.add_variable( "energy_use_rate", "1/min" , parameters.doubles("cell_default_energy_use_rate") ); 
 	cell_defaults.custom_data.add_variable( "cycle_energy_threshold", "dimensionless" , parameters.doubles("cell_default_cycle_energy_threshold") ); 
 	cell_defaults.custom_data.add_variable( "death_energy_threshold", "dimensionless" , parameters.doubles("cell_default_death_energy_threshold") );
+	cell_defaults.custom_data.add_variable( "G01S_thr", "dimensionless" , parameters.doubles("organoid_cell_G01S_thr") );
+	
 	
 	cell_defaults.custom_data.add_variable( "k_aerobe", "dimensionless" , parameters.doubles("k_aerobe") );
 	cell_defaults.custom_data.add_variable( "k_anaerobe", "dimensionless" , parameters.doubles("k_anaerobe") );
@@ -169,17 +171,34 @@ void create_cell_types( void )
 	// Set cell-cell adhesion to 5% of other cells 
 	// organoid_cell.phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "organoid_cell_relative_adhesion" ); // 0.05; 
 	
-	// Set apoptosis to zero 
-	organoid_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "organoid_cell_apoptosis_rate" ); // 0.0; 
-	organoid_cell.phenotype.cycle.data.transition_rate(i_Ki67_negative,i_Ki67_positive) *= parameters.doubles( "organoid_cell_r01" );
-	organoid_cell.phenotype.cycle.data.transition_rate(i_Ki67_positive,i_Ki67_negative) *= parameters.doubles( "organoid_cell_r10" );
+
 	
 	
 	
 	// Set Energy Function
-	organoid_cell.functions.update_phenotype = tumor_energy_update_function;
-	organoid_cell.phenotype.molecular.sync_to_microenvironment( &microenvironment );
 	
+	organoid_cell.custom_data.add_variable( "energy", "dimensionless" , parameters.doubles("cell_default_inital_energy") ); 
+	organoid_cell.custom_data.add_variable( "energy_creation_rate", "1/min" , parameters.doubles("cell_default_energy_creation_rate") ); 
+	organoid_cell.custom_data.add_variable( "energy_use_rate", "1/min" , parameters.doubles("cell_default_energy_use_rate") ); 
+	organoid_cell.custom_data.add_variable( "cycle_energy_threshold", "dimensionless" , parameters.doubles("cell_default_cycle_energy_threshold") ); 
+	organoid_cell.custom_data.add_variable( "death_energy_threshold", "dimensionless" , parameters.doubles("cell_default_death_energy_threshold") );
+	organoid_cell.custom_data.add_variable( "G01S_thr", "dimensionless" , parameters.doubles("organoid_cell_G01S_thr") );
+	
+	
+	organoid_cell.custom_data.add_variable( "k_aerobe", "dimensionless" , parameters.doubles("k_aerobe") );
+	organoid_cell.custom_data.add_variable( "k_anaerobe", "dimensionless" , parameters.doubles("k_anaerobe") );
+	organoid_cell.custom_data.add_variable( "k_glut", "dimensionless" , parameters.doubles("k_glut") );
+	organoid_cell.custom_data.add_variable( "k_usage", "dimensionless" , parameters.doubles("k_usage") );
+	organoid_cell.custom_data.add_variable( "alpha", "dimensionless" , parameters.doubles("alpha") );
+	organoid_cell.custom_data.add_variable( "beta", "dimensionless" , parameters.doubles("beta") );
+	organoid_cell.custom_data.add_variable( "gamma", "dimensionless" , parameters.doubles("gamma") );
+	
+	organoid_cell.phenotype.molecular.sync_to_microenvironment( &microenvironment );
+	organoid_cell.functions.update_phenotype = tumor_energy_update_function;
+	// Set apoptosis to zero 
+	organoid_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "organoid_cell_apoptosis_rate" ); // 0.0; 
+	organoid_cell.phenotype.cycle.data.transition_rate(i_Ki67_negative,i_Ki67_positive) = 0.0;
+	organoid_cell.phenotype.cycle.data.transition_rate(i_Ki67_positive,i_Ki67_negative) = 0.0;
 	
 	// ---- END -- Organoid Cell Definitions -- END ---- //
 	
@@ -194,11 +213,12 @@ void create_cell_types( void )
 	
 	fibro_cell.parameters.pReference_live_phenotype = &( fibro_cell.phenotype ); 
 	// Set cell-cell adhesion to 5% of other cells 
-	// fibro_cell.phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "fibroblast_relative_adhesion" ); // 0.05; 
+	//fibro_cell.phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "fibroblast_relative_adhesion" );
 	
 	// Set apoptosis to zero 
 	fibro_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "fibroblast_apoptosis_rate" ); // 0.0; 
-	fibro_cell.phenotype.cycle.data.transition_rate(start_index,end_index) *= parameters.doubles( "fibroblast_relative_cycle_entry_rate" ); // 0.0;
+	fibro_cell.phenotype.cycle.data.transition_rate(i_Ki67_negative,i_Ki67_positive) = 0.0;
+	fibro_cell.phenotype.cycle.data.transition_rate(i_Ki67_positive,i_Ki67_negative) = 0.0;
 	// ---- END -- Fibroblast Cell Definitions -- END ---- //	
 	
 	return; 
@@ -337,16 +357,12 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	static int lactate_substrate_index = microenvironment.find_density_index( "lactate" );
 	static int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" );
 	
-	std::cout<< phenotype.molecular.internalized_total_substrates[oxygen_substrate_index] << std::endl;
-	std::cout<< phenotype.molecular.internalized_total_substrates[glucose_substrate_index] << std::endl;
-	std::cout<< phenotype.molecular.internalized_total_substrates[lactate_substrate_index] << std::endl;
-	std::cout<< phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] << std::endl;
-
 	static int nE = pCell->custom_data.find_variable_index( "energy" ); 
 	static int nA = pCell->custom_data.find_variable_index( "energy_creation_rate" ); 
 	static int nB = pCell->custom_data.find_variable_index( "energy_use_rate" );
 	static int nBirth = pCell->custom_data.find_variable_index( "cycle_energy_threshold" );  
 	static int nDeath = pCell->custom_data.find_variable_index( "death_energy_threshold" );
+	static int nG01S_thr = pCell->custom_data.find_variable_index( "G01S_thr" );
 	
 	static int nk_aerobe = pCell->custom_data.find_variable_index( "k_aerobe" );
 	static int nk_anaerobe = pCell->custom_data.find_variable_index( "k_anaerobe" );
@@ -362,6 +378,7 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	double internal_glutamine = phenotype.molecular.internalized_total_substrates[glutamine_substrate_index];
 	
 	
+
 	// Energy function
 	pCell->custom_data[nE] += dt*(internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] + internal_glucose * pCell->custom_data[nk_anaerobe] + internal_glutamine * pCell->custom_data[nk_glut] - pCell->custom_data[nE] * pCell->custom_data[nk_usage]);
 	
@@ -373,28 +390,47 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	
 	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	static int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
-	static int ncycle_End_i = live.find_phase_index( PhysiCell_constants::live );
-	static int ncycle_Start_i = live.find_phase_index( PhysiCell_constants::live );
+	static int i_Ki67_negative = live.find_phase_index( PhysiCell_constants::Ki67_negative );
+	static int i_Ki67_positive = live.find_phase_index( PhysiCell_constants::Ki67_positive );
+	
+	phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )]=0.0;
+	phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative )]=0.0;
+	
+	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )] << std::endl;
+	//std::cout<< pCell->custom_data[nE] << std::endl;
 	
 	
-	if (phenotype.cycle.data.current_phase_index == 0)
+	if (pCell->ID == 1)
 	{
-		if(
-	}
-	
+	std::cout<< phenotype.molecular.internalized_total_substrates[oxygen_substrate_index] << std::endl;
+	std::cout<< phenotype.molecular.internalized_total_substrates[glucose_substrate_index] << std::endl;
+	std::cout<< phenotype.molecular.internalized_total_substrates[lactate_substrate_index] << std::endl;
+	std::cout<< phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] << std::endl;
+	std::cout<< pCell->custom_data[nE] << std::endl;
+	}	
 
 	// die if energy is low 
- 	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
+	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
 	{
-		phenotype.death.rates[apoptosis_model_index] = parameters.doubles("apoptosis_rate"); 
+	//std::cout<< pCell->custom_data[nE] << std::endl;
+	phenotype.death.rates[apoptosis_model_index] = parameters.doubles("apoptosis_rate"); 
 	}
-
+		
+	if( pCell->custom_data[nE] > pCell->custom_data[nG01S_thr])
+	{
+	phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) = parameters.doubles("organoid_cell_r01");
+	//std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) << std::endl;
+	}
+	
 	if( pCell->custom_data[nE] > pCell->custom_data[nBirth])
 	{
-		phenotype.cycle.data.transition_rate( ncycle_Start_i,ncycle_End_i ) = parameters.doubles("proliferation_rate"); 
-		
+	phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) = parameters.doubles("organoid_cell_r10"); 
+	//std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) << std::endl;
 	}
 
+	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )] << std::endl;
+	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative )] << std::endl;
+	
 	// ---- END -- Tumor Function -- END ---- //
 	return;
 }
