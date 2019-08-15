@@ -348,6 +348,36 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 
 void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt )
 {
+
+
+	// die if energy is low 
+	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
+	{
+	//std::cout<< pCell->custom_data[nE] << std::endl;
+	phenotype.death.rates[apoptosis_model_index] = parameters.doubles("apoptosis_rate"); 
+	}
+		
+	if( pCell->custom_data[nE] > pCell->custom_data[nG01S_thr])
+	{
+	phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) = parameters.doubles("organoid_cell_r01");
+    std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) << std::endl;
+	}
+	
+	if( pCell->custom_data[nE] > pCell->custom_data[nBirth])
+	{
+	phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) = parameters.doubles("organoid_cell_r10"); 
+	std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) << std::endl;
+	}
+
+	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )] << std::endl;
+	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative )] << std::endl;
+	
+	// ---- END -- Tumor Function -- END ---- //
+	return;
+}
+
+void metabolic_equation_solver( Cell* pCell,Phenotype& phenotype, double dt )
+{
 	
 	// ---- START -- Tumor Function -- START ---- //
 	Microenvironment* pME = get_default_microenvironment();
@@ -356,13 +386,6 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	static int glucose_substrate_index = microenvironment.find_density_index( "glucose" );
 	static int lactate_substrate_index = microenvironment.find_density_index( "lactate" );
 	static int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" );
-	
-	static int nE = pCell->custom_data.find_variable_index( "energy" ); 
-	static int nA = pCell->custom_data.find_variable_index( "energy_creation_rate" ); 
-	static int nB = pCell->custom_data.find_variable_index( "energy_use_rate" );
-	static int nBirth = pCell->custom_data.find_variable_index( "cycle_energy_threshold" );  
-	static int nDeath = pCell->custom_data.find_variable_index( "death_energy_threshold" );
-	static int nG01S_thr = pCell->custom_data.find_variable_index( "G01S_thr" );
 	
 	static int nk_aerobe = pCell->custom_data.find_variable_index( "k_aerobe" );
 	static int nk_anaerobe = pCell->custom_data.find_variable_index( "k_anaerobe" );
@@ -388,16 +411,7 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	phenotype.molecular.internalized_total_substrates[lactate_substrate_index] += dt*(internal_glucose * pCell->custom_data[nk_anaerobe] * pCell->custom_data[nbeta]);
 	phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] += dt*( -1.0 * internal_glutamine * pCell->custom_data[nk_glut] * pCell->custom_data[ngamma]);
 	
-	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
-	static int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
-	static int i_Ki67_negative = live.find_phase_index( PhysiCell_constants::Ki67_negative );
-	static int i_Ki67_positive = live.find_phase_index( PhysiCell_constants::Ki67_positive );
-	
-	phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )]=0.0;
-	phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative )]=0.0;
-	
-	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )] << std::endl;
-	//std::cout<< pCell->custom_data[nE] << std::endl;
+	std::cout<< pCell->custom_data[nE] << std::endl;
 	
 	
 	if (pCell->ID == 1)
@@ -408,34 +422,12 @@ void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt
 	std::cout<< phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] << std::endl;
 	std::cout<< pCell->custom_data[nE] << std::endl;
 	}	
-
-	// die if energy is low 
-	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
-	{
-	//std::cout<< pCell->custom_data[nE] << std::endl;
-	phenotype.death.rates[apoptosis_model_index] = parameters.doubles("apoptosis_rate"); 
-	}
-		
-	if( pCell->custom_data[nE] > pCell->custom_data[nG01S_thr])
-	{
-	phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) = parameters.doubles("organoid_cell_r01");
-	//std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) << std::endl;
-	}
 	
-	if( pCell->custom_data[nE] > pCell->custom_data[nBirth])
-	{
-	phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) = parameters.doubles("organoid_cell_r10"); 
-	//std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) << std::endl;
-	}
-
-	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )] << std::endl;
-	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative )] << std::endl;
 	
-	// ---- END -- Tumor Function -- END ---- //
-	return;
+	
+	
+	
 }
-
-
 
 std::vector<std::vector<double>> create_cell_sphere_positions(double cell_radius, double sphere_radius)
 {

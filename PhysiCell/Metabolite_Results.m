@@ -5,7 +5,7 @@ cd output/
 
 
 %%
-MCDS = read_MultiCellDS_xml( 'output00000042.xml');
+MCDS = read_MultiCellDS_xml( 'output00000000.xml');
 
 k = find( MCDS.mesh.Z_coordinates == 10 );
 %%
