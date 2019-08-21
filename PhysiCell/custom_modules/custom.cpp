@@ -110,38 +110,36 @@ void create_cell_types( void )
 	// first find index for a few key variables. 
 	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
+	int i_Ki67_negative = Ki67_basic.find_phase_index( PhysiCell_constants::Ki67_negative );
+	int i_Ki67_positive = Ki67_basic.find_phase_index( PhysiCell_constants::Ki67_positive );
+	
 	int oxygen_substrate_index = microenvironment.find_density_index( "oxygen" ); 
 	int glucose_substrate_index = microenvironment.find_density_index( "glucose" );
 	int lactate_substrate_index = microenvironment.find_density_index( "lactate" );
 	int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" );
-	
 
-	int i_Ki67_negative = live.find_phase_index( PhysiCell_constants::Ki67_negative );
-	int i_Ki67_positive = live.find_phase_index(  PhysiCell_constants::Ki67_positive );
 
 	// initially no necrosis 
 	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
 
 	// set oxygen uptake / secretion parameters for the default cell type 
-	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 10.0; 
+	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 0.01; 
 	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 0.0; 
 	
-	cell_defaults.phenotype.secretion.uptake_rates[glucose_substrate_index] = 10.0; 
+	cell_defaults.phenotype.secretion.uptake_rates[glucose_substrate_index] = 0.01; 
 	cell_defaults.phenotype.secretion.secretion_rates[glucose_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[glucose_substrate_index] = 0.0; 
 	
-	cell_defaults.phenotype.secretion.uptake_rates[lactate_substrate_index] = 10.0; 
-	cell_defaults.phenotype.secretion.secretion_rates[lactate_substrate_index] = 0.0; 
-	cell_defaults.phenotype.secretion.saturation_densities[lactate_substrate_index] = 0.0; 
+	cell_defaults.phenotype.secretion.uptake_rates[lactate_substrate_index] = 0.0; 
+	cell_defaults.phenotype.secretion.secretion_rates[lactate_substrate_index] = 0.01; 
+	cell_defaults.phenotype.secretion.saturation_densities[lactate_substrate_index] = 1.0; 
 	
-	cell_defaults.phenotype.secretion.uptake_rates[glutamine_substrate_index] = 10.0; 
+	cell_defaults.phenotype.secretion.uptake_rates[glutamine_substrate_index] = 0.01;
 	cell_defaults.phenotype.secretion.secretion_rates[glutamine_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[glutamine_substrate_index] = 0.0;
 	
 	cell_defaults.custom_data.add_variable( "energy", "dimensionless" , parameters.doubles("cell_default_inital_energy") ); 
-	cell_defaults.custom_data.add_variable( "energy_creation_rate", "1/min" , parameters.doubles("cell_default_energy_creation_rate") ); 
-	cell_defaults.custom_data.add_variable( "energy_use_rate", "1/min" , parameters.doubles("cell_default_energy_use_rate") ); 
 	cell_defaults.custom_data.add_variable( "cycle_energy_threshold", "dimensionless" , parameters.doubles("cell_default_cycle_energy_threshold") ); 
 	cell_defaults.custom_data.add_variable( "death_energy_threshold", "dimensionless" , parameters.doubles("cell_default_death_energy_threshold") );
 	cell_defaults.custom_data.add_variable( "G01S_thr", "dimensionless" , parameters.doubles("organoid_cell_G01S_thr") );
@@ -171,30 +169,10 @@ void create_cell_types( void )
 	// Set cell-cell adhesion to 5% of other cells 
 	// organoid_cell.phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "organoid_cell_relative_adhesion" ); // 0.05; 
 	
-
-	
-	
-	
 	// Set Energy Function
-	
-	organoid_cell.custom_data.add_variable( "energy", "dimensionless" , parameters.doubles("cell_default_inital_energy") ); 
-	organoid_cell.custom_data.add_variable( "energy_creation_rate", "1/min" , parameters.doubles("cell_default_energy_creation_rate") ); 
-	organoid_cell.custom_data.add_variable( "energy_use_rate", "1/min" , parameters.doubles("cell_default_energy_use_rate") ); 
-	organoid_cell.custom_data.add_variable( "cycle_energy_threshold", "dimensionless" , parameters.doubles("cell_default_cycle_energy_threshold") ); 
-	organoid_cell.custom_data.add_variable( "death_energy_threshold", "dimensionless" , parameters.doubles("cell_default_death_energy_threshold") );
-	organoid_cell.custom_data.add_variable( "G01S_thr", "dimensionless" , parameters.doubles("organoid_cell_G01S_thr") );
-	
-	
-	organoid_cell.custom_data.add_variable( "k_aerobe", "dimensionless" , parameters.doubles("k_aerobe") );
-	organoid_cell.custom_data.add_variable( "k_anaerobe", "dimensionless" , parameters.doubles("k_anaerobe") );
-	organoid_cell.custom_data.add_variable( "k_glut", "dimensionless" , parameters.doubles("k_glut") );
-	organoid_cell.custom_data.add_variable( "k_usage", "dimensionless" , parameters.doubles("k_usage") );
-	organoid_cell.custom_data.add_variable( "alpha", "dimensionless" , parameters.doubles("alpha") );
-	organoid_cell.custom_data.add_variable( "beta", "dimensionless" , parameters.doubles("beta") );
-	organoid_cell.custom_data.add_variable( "gamma", "dimensionless" , parameters.doubles("gamma") );
-	
 	organoid_cell.phenotype.molecular.sync_to_microenvironment( &microenvironment );
 	organoid_cell.functions.update_phenotype = tumor_energy_update_function;
+	
 	// Set apoptosis to zero 
 	organoid_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "organoid_cell_apoptosis_rate" ); // 0.0; 
 	organoid_cell.phenotype.cycle.data.transition_rate(i_Ki67_negative,i_Ki67_positive) = 0.0;
@@ -219,6 +197,23 @@ void create_cell_types( void )
 	fibro_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "fibroblast_apoptosis_rate" ); // 0.0; 
 	fibro_cell.phenotype.cycle.data.transition_rate(i_Ki67_negative,i_Ki67_positive) = 0.0;
 	fibro_cell.phenotype.cycle.data.transition_rate(i_Ki67_positive,i_Ki67_negative) = 0.0;
+	
+	fibro_cell.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 0.0;
+	fibro_cell.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0.0; 
+	fibro_cell.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 0.0; 
+	
+	fibro_cell.phenotype.secretion.uptake_rates[glucose_substrate_index] = 0.0; 
+	fibro_cell.phenotype.secretion.secretion_rates[glucose_substrate_index] = 0.0; 
+	fibro_cell.phenotype.secretion.saturation_densities[glucose_substrate_index] = 0.0; 
+	
+	fibro_cell.phenotype.secretion.uptake_rates[lactate_substrate_index] = 0.0; 
+	fibro_cell.phenotype.secretion.secretion_rates[lactate_substrate_index] = 0.0; 
+	fibro_cell.phenotype.secretion.saturation_densities[lactate_substrate_index] = 0.0; 
+	
+	fibro_cell.phenotype.secretion.uptake_rates[glutamine_substrate_index] = 0.0;
+	fibro_cell.phenotype.secretion.secretion_rates[glutamine_substrate_index] = 0.0; 
+	fibro_cell.phenotype.secretion.saturation_densities[glutamine_substrate_index] = 0.0;
+	
 	// ---- END -- Fibroblast Cell Definitions -- END ---- //	
 	
 	return; 
@@ -248,19 +243,19 @@ void setup_microenvironment( void )
 
 	// ---- START -- Adding Substrates to Microenvironment -- START ---- //	
 	
-	pME->add_density( "glucose", "micromolar" , 1.6e3 , 0.01 );
+	pME->add_density( "glucose", "micromolar" , 1.6e3 , 0.00 );
 	int glucose_substrate_index = pME->find_density_index( "glucose" );
 	default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = false;
 	
 	
-	pME->add_density( "lactate", "micromolar" , 1.6e3 , 0.01 );
+	pME->add_density( "lactate", "micromolar" , 1.6e3 , 0.00 );
 	int lactate_substrate_index = pME->find_density_index( "lactate" );
 	default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
 	default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
 	
 	
-	pME->add_density( "glutamine", "micromolar" , 1.6e3 , 0.01 );
+	pME->add_density( "glutamine", "micromolar" , 1.6e3 , 0.00 );
 	int glutamine_substrate_index = pME->find_density_index( "glutamine" );
 	default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = false;
@@ -348,40 +343,9 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 
 void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt )
 {
-
-
-	// die if energy is low 
-	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
-	{
-	//std::cout<< pCell->custom_data[nE] << std::endl;
-	phenotype.death.rates[apoptosis_model_index] = parameters.doubles("apoptosis_rate"); 
-	}
-		
-	if( pCell->custom_data[nE] > pCell->custom_data[nG01S_thr])
-	{
-	phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) = parameters.doubles("organoid_cell_r01");
-    std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) << std::endl;
-	}
-	
-	if( pCell->custom_data[nE] > pCell->custom_data[nBirth])
-	{
-	phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) = parameters.doubles("organoid_cell_r10"); 
-	std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) << std::endl;
-	}
-
-	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )] << std::endl;
-	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative )] << std::endl;
-	
-	// ---- END -- Tumor Function -- END ---- //
-	return;
-}
-
-void metabolic_equation_solver( Cell* pCell,Phenotype& phenotype, double dt )
-{
-	
 	// ---- START -- Tumor Function -- START ---- //
 	Microenvironment* pME = get_default_microenvironment();
-	
+
 	static int oxygen_substrate_index = microenvironment.find_density_index( "oxygen" ); 
 	static int glucose_substrate_index = microenvironment.find_density_index( "glucose" );
 	static int lactate_substrate_index = microenvironment.find_density_index( "lactate" );
@@ -394,13 +358,18 @@ void metabolic_equation_solver( Cell* pCell,Phenotype& phenotype, double dt )
 	static int nalpha = pCell->custom_data.find_variable_index( "alpha" );
 	static int nbeta = pCell->custom_data.find_variable_index( "beta" );
 	static int ngamma = pCell->custom_data.find_variable_index( "gamma" );
+	static int nE = pCell->custom_data.find_variable_index("energy");
+	static int nDeath = pCell->custom_data.find_variable_index("death_energy_threshold");
+	static int nBirth = pCell->custom_data.find_variable_index("cycle_energy_threshold");
+	static int nG01S_thr = pCell->custom_data.find_variable_index("G01S_thr");
+	static int i_Ki67_negative = Ki67_basic.find_phase_index( PhysiCell_constants::Ki67_negative );
+	static int i_Ki67_positive = Ki67_basic.find_phase_index( PhysiCell_constants::Ki67_positive );
+	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	
 	double internal_oxygen = phenotype.molecular.internalized_total_substrates[oxygen_substrate_index];
 	double internal_glucose = phenotype.molecular.internalized_total_substrates[glucose_substrate_index];
 	double internal_lactate = phenotype.molecular.internalized_total_substrates[lactate_substrate_index];
 	double internal_glutamine = phenotype.molecular.internalized_total_substrates[glutamine_substrate_index];
-	
-	
 
 	// Energy function
 	pCell->custom_data[nE] += dt*(internal_glucose * internal_oxygen * pCell->custom_data[nk_aerobe] + internal_glucose * pCell->custom_data[nk_anaerobe] + internal_glutamine * pCell->custom_data[nk_glut] - pCell->custom_data[nE] * pCell->custom_data[nk_usage]);
@@ -411,17 +380,49 @@ void metabolic_equation_solver( Cell* pCell,Phenotype& phenotype, double dt )
 	phenotype.molecular.internalized_total_substrates[lactate_substrate_index] += dt*(internal_glucose * pCell->custom_data[nk_anaerobe] * pCell->custom_data[nbeta]);
 	phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] += dt*( -1.0 * internal_glutamine * pCell->custom_data[nk_glut] * pCell->custom_data[ngamma]);
 	
-	std::cout<< pCell->custom_data[nE] << std::endl;
+	//std::cout<< pCell->custom_data[nE] << std::endl;
+	//std::cout<< pCell->ID << std::endl;
 	
+	//std::cout<< phenotype.molecular.internalized_total_substrates[lactate_substrate_index] << std::endl;
 	
-	if (pCell->ID == 1)
+	if (pCell->ID == 10002)
 	{
-	std::cout<< phenotype.molecular.internalized_total_substrates[oxygen_substrate_index] << std::endl;
-	std::cout<< phenotype.molecular.internalized_total_substrates[glucose_substrate_index] << std::endl;
-	std::cout<< phenotype.molecular.internalized_total_substrates[lactate_substrate_index] << std::endl;
-	std::cout<< phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] << std::endl;
-	std::cout<< pCell->custom_data[nE] << std::endl;
-	}	
+	//std::cout << "Intracellular Oxygen:"	<< phenotype.molecular.internalized_total_substrates[oxygen_substrate_index] << std::endl;
+	//std::cout<< "Intracellular Glucose:"	<< phenotype.molecular.internalized_total_substrates[glucose_substrate_index] << std::endl;
+	//std::cout<< "Intracellular Lactate:"	<<phenotype.molecular.internalized_total_substrates[lactate_substrate_index] << std::endl;
+	//std::cout<< "Intracellular Glutamine:"	<<phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] << std::endl;
+	//std::cout<< "Energy:"	<< pCell->custom_data[nE] << std::endl;
+	}
+	
+
+	// die if energy is low 
+	if( pCell->custom_data[nE] < pCell->custom_data[nDeath] )
+	{
+	//std::cout<< pCell->custom_data[nE] << std::endl;
+	phenotype.death.rates[apoptosis_model_index] = parameters.doubles("apoptosis_rate");
+	}
+		
+	if( pCell->custom_data[nE] > pCell->custom_data[nG01S_thr])
+	{
+	phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) = parameters.doubles("organoid_cell_r01");
+    //std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive ) << std::endl;
+	}
+	
+	if( pCell->custom_data[nE] > pCell->custom_data[nBirth])
+	{
+	phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) = parameters.doubles("organoid_cell_r10"); 
+	//std::cout<< phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative ) << std::endl;
+	}
+
+	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_negative,i_Ki67_positive )] << std::endl;
+	//std::cout<< phenotype.molecular.internalized_total_substrates[phenotype.cycle.data.transition_rate( i_Ki67_positive,i_Ki67_negative )] << std::endl;
+	
+	// ---- END -- Tumor Function -- END ---- //
+	return;
+}
+
+void metabolic_equation_solver( Cell* pCell,Phenotype& phenotype, double dt )
+{
 	
 	
 	

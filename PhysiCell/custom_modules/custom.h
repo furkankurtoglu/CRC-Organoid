@@ -93,3 +93,5 @@ void setup_microenvironment( void );
 std::vector<std::string> my_coloring_function( Cell* );
 void tumor_energy_update_function( Cell* pCell, Phenotype& phenotype , double dt );
 std::vector<std::vector<double>> create_cell_sphere_positions(double cell_radius, double sphere_radius);
+
+void metabolic_equation_solver( Cell* pCell,Phenotype& phenotype, double dt );
