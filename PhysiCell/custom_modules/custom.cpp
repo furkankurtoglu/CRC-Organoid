@@ -123,11 +123,11 @@ void create_cell_types( void )
 	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
 
 	// set oxygen uptake / secretion parameters for the default cell type 
-	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 0.01; 
+	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 0.001; 
 	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 0.0; 
 	
-	cell_defaults.phenotype.secretion.uptake_rates[glucose_substrate_index] = 0.01; 
+	cell_defaults.phenotype.secretion.uptake_rates[glucose_substrate_index] = 0.001; 
 	cell_defaults.phenotype.secretion.secretion_rates[glucose_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[glucose_substrate_index] = 0.0; 
 	
@@ -135,7 +135,7 @@ void create_cell_types( void )
 	cell_defaults.phenotype.secretion.secretion_rates[lactate_substrate_index] = 0.01; 
 	cell_defaults.phenotype.secretion.saturation_densities[lactate_substrate_index] = 1.0; 
 	
-	cell_defaults.phenotype.secretion.uptake_rates[glutamine_substrate_index] = 0.01;
+	cell_defaults.phenotype.secretion.uptake_rates[glutamine_substrate_index] = 0.001;
 	cell_defaults.phenotype.secretion.secretion_rates[glutamine_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[glutamine_substrate_index] = 0.0;
 	
@@ -243,19 +243,19 @@ void setup_microenvironment( void )
 
 	// ---- START -- Adding Substrates to Microenvironment -- START ---- //	
 	
-	pME->add_density( "glucose", "micromolar" , 1.6e3 , 0.00 );
+	pME->add_density( "glucose", "concentration" , 1.6e3 , 0.00 );
 	int glucose_substrate_index = pME->find_density_index( "glucose" );
 	default_microenvironment_options.Dirichlet_condition_vector[glucose_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glucose_substrate_index] = false;
 	
 	
-	pME->add_density( "lactate", "micromolar" , 1.6e3 , 0.00 );
+	pME->add_density( "lactate", "concentration" , 1.6e3 , 0.00 );
 	int lactate_substrate_index = pME->find_density_index( "lactate" );
 	default_microenvironment_options.Dirichlet_condition_vector[lactate_substrate_index] = 0.0;
 	default_microenvironment_options.Dirichlet_activation_vector[lactate_substrate_index] = false;
 	
 	
-	pME->add_density( "glutamine", "micromolar" , 1.6e3 , 0.00 );
+	pME->add_density( "glutamine", "concentration" , 1.6e3 , 0.00 );
 	int glutamine_substrate_index = pME->find_density_index( "glutamine" );
 	default_microenvironment_options.Dirichlet_condition_vector[glutamine_substrate_index] = 10.0;
 	default_microenvironment_options.Dirichlet_activation_vector[glutamine_substrate_index] = false;

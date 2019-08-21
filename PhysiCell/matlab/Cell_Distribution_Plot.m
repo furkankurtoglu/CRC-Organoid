@@ -19,7 +19,7 @@ end
 %%
 NoofCells=zeros(1,length(OutMatFiles));
 
-for i = 1:6
+for i = 1:length(OutMatFiles)
 %for i = 1:length(OutMatFiles)
     
     xmlname=strcat(OutMatFiles{i},'.xml');
