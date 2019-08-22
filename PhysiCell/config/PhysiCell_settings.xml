@@ -141,7 +141,7 @@
 		
 		<k_aerobe type="double" units="1/min" hidden="false">0.00000001</k_aerobe>
 		<k_anaerobe type="double" units="1/min" hidden="false">0.00000001</k_anaerobe>
-		<k_glut type="double" units="1/min" hidden="false">0.0.00000001</k_glut>
+		<k_glut type="double" units="1/min" hidden="false">0.000000001</k_glut>
 		<k_usage type="double" units="1/min" hidden="false">0.001</k_usage>
 		<alpha type="double" units="1/min" hidden="false">1</alpha>
 		<beta type="double" units="1/min" hidden="false">1</beta>

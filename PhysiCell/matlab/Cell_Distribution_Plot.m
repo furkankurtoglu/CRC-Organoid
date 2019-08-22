@@ -19,8 +19,8 @@ end
 %%
 NoofCells=zeros(1,length(OutMatFiles));
 
-for i = 1:length(OutMatFiles)
-%for i = 1:length(OutMatFiles)
+for i = 73:73
+% for i = 1:length(OutMatFiles)
     
     xmlname=strcat(OutMatFiles{i},'.xml');
     MCDS = read_MultiCellDS_xml( xmlname);
@@ -53,12 +53,14 @@ for i = 1:length(OutMatFiles)
 %     title(['Time = ',time,' days'])
 %     set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
 %     figure(1)
-%     
-%     %% Oxygen
+    
+    %% Oxygen
 %     k = find( MCDS.mesh.Z_coordinates == 10 );
+% %     h = figure('Renderer', 'painters', 'Position', [10 10 900 600]);
+% %  filename = 'OxygenResult.gif';
 %     figure(2)
 %     contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(1).data(:,:,k) , 20 ) ;
-%     
+%    
 %     axis image
 %     colorbar
 %     xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) );
@@ -71,6 +73,16 @@ for i = 1:length(OutMatFiles)
 %         MCDS.mesh.Z_coordinates(k), ...
 %         MCDS.metadata.spatial_units ) );
 %     
+%      frame = getframe(h); 
+%       im = frame2im(frame); 
+%       [imind,cm] = rgb2ind(im,256); 
+%       % Write to the GIF File 
+%       if i == 1 
+%           imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+%       else 
+%           imwrite(imind,cm,filename,'gif','WriteMode','append'); 
+%       end 
+    
     %% Glucose
     k = find( MCDS.mesh.Z_coordinates == 10 );
     figure(3)
@@ -83,32 +95,25 @@ for i = 1:length(OutMatFiles)
     
     title( sprintf('%s (%s) at t = %3.2f %s, z = %3.2f %s', MCDS.continuum_variables(2).name , ...
         MCDS.continuum_variables(2).units , ...
-        MCDS.metadata.current_time , ...
-        MCDS.metadata.time_units, ...
+        MCDS.metadata.current_time/24.0/60 , ...
+        '(day)', ...
         MCDS.mesh.Z_coordinates(k), ...
         MCDS.metadata.spatial_units ) );
+
+    
+%     frame = getframe(h); 
+%       im = frame2im(frame); 
+%       [imind,cm] = rgb2ind(im,256); 
+%       % Write to the GIF File 
+%       if i == 1 
+%           imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+%       else 
+%           imwrite(imind,cm,filename,'gif','WriteMode','append'); 
+%       end 
     
     %% Glutamine
 %     k = find( MCDS.mesh.Z_coordinates == 10 );
 %     figure(4)
-%     contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(3).data(:,:,k) , 20 ) ;
-%     
-%     axis image
-%     colorbar
-%     xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) );
-%     ylabel( sprintf( 'y (%s)' , MCDS.metadata.spatial_units) );
-%     
-%     title( sprintf('%s (%s) at t = %3.2f %s, z = %3.2f %s', MCDS.continuum_variables(3).name , ...
-%         MCDS.continuum_variables(3).units , ...
-%         MCDS.metadata.current_time , ...
-%         MCDS.metadata.time_units, ...
-%         MCDS.mesh.Z_coordinates(k), ...
-%         MCDS.metadata.spatial_units ) );
-%     
-%     
-%     %% Lactate
-%     k = find( MCDS.mesh.Z_coordinates == 10 );
-%     figure(5)
 %     contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(4).data(:,:,k) , 20 ) ;
 %     
 %     axis image
@@ -122,5 +127,36 @@ for i = 1:length(OutMatFiles)
 %         MCDS.metadata.time_units, ...
 %         MCDS.mesh.Z_coordinates(k), ...
 %         MCDS.metadata.spatial_units ) );
+%     
+%     
+    %% Lactate
+    k = find( MCDS.mesh.Z_coordinates == 10 );
+%     h = figure('Renderer', 'painters', 'Position', [10 10 900 600]);
+%     filename = 'Lactate.gif';
+    figure(5)
+    contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(3).data(:,:,k) , 20 ) ;
+    
+    axis image
+    colorbar
+    xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) );
+    ylabel( sprintf( 'y (%s)' , MCDS.metadata.spatial_units) );
+    
+    title( sprintf('%s (%s) at t = %3.2f %s, z = %3.2f %s', MCDS.continuum_variables(3).name , ...
+        MCDS.continuum_variables(3).units , ...
+         MCDS.metadata.current_time/24.0/60 , ...
+        '(day)', ...
+        MCDS.mesh.Z_coordinates(k), ...
+        MCDS.metadata.spatial_units ) );
+    
+%         frame = getframe(h); 
+%       im = frame2im(frame); 
+%       [imind,cm] = rgb2ind(im,256); 
+%       % Write to the GIF File 
+%       if i == 1 
+%           imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+%       else 
+%           imwrite(imind,cm,filename,'gif','WriteMode','append'); 
+%       end 
+% 
 %     
 end
