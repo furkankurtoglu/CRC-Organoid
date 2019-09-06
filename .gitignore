@@ -1,6 +1,5 @@
 *.o 
 *.exe
-*.mat 
-*.xml
+*.mat
 *.svg
-*.exe
+\PhysiCell_v.1.6\output
