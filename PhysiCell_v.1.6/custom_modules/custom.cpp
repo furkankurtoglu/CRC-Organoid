@@ -285,7 +285,7 @@ void setup_tissue( void )
 	
 	// create some cells near the origin
 	// ---- START -- Setting Up Fibroblast Surface -- START ---- //
-/* 	std::cout << "creating fibroblasts" << std::endl;
+ 	std::cout << "creating fibroblasts" << std::endl;
 	
 	for (int i= -500; i<500; i+=10)
 	{
@@ -294,8 +294,7 @@ void setup_tissue( void )
 			pCell = create_cell(fibro_cell);
 			pCell->assign_position(i,-800,j);	
 		}
-	} */
-	
+	} 	
 	// ---- END -- Setting Up Fibroblast Surface -- END ---- //
 
 
