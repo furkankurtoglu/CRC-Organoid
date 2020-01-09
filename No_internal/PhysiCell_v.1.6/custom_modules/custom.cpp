@@ -266,7 +266,7 @@ void setup_microenvironment( void )
 	   double voxel_distance_to_tumor_center = (tumor_center[0]-xpos)*(tumor_center[0]-xpos)+(tumor_center[1]-ypos)*(tumor_center[1]-ypos)+(tumor_center[2]-zpos)*(tumor_center[2]-zpos);
 	   voxel_distance_to_tumor_center = pow(voxel_distance_to_tumor_center, 1.0/2.0);
 
-	   if (voxel_distance_to_tumor_center > 200)
+	   if (voxel_distance_to_tumor_center > 250)
 	   {
 		microenvironment.add_dirichlet_node( n,dc_vector );
 	   }

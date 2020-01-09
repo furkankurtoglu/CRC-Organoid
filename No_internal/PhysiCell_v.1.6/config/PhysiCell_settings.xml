@@ -168,7 +168,7 @@
 		<fibroblast_r10 type="double" units="dimensionless">0.0</fibroblast_r10>
 		<fibroblast_relative_adhesion type="double" units="dimensionless">0.05</fibroblast_relative_adhesion>
 		
-		<initial_tumor_radius type="double" units="dimensionless">200</initial_tumor_radius>
+		<initial_tumor_radius type="double" units="dimensionless">250</initial_tumor_radius>
 		<organoid_distance type="double" units="dimensionless">930</organoid_distance>
 		
 		<apoptosis_rate type="double" units="dimensionless">0</apoptosis_rate>
@@ -179,7 +179,7 @@
 	
 		
 		<k_aerobe type="double" units="1/min" hidden="false">0.002</k_aerobe>
-		<k_anaerobe type="double" units="1/min" hidden="false">-0.0386</k_anaerobe>
+		<k_anaerobe type="double" units="1/min" hidden="false">0</k_anaerobe>
 		<k_usage type="double" units="1/min" hidden="false">0.023</k_usage>
 		
 	</user_parameters>

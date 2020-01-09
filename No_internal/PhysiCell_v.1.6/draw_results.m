@@ -3,9 +3,7 @@ close all
 clc
 
 %%
-%%cd C:\Users\Furkan\Desktop\no int res\output_for_center_conc
-
-cd output\
+cd C:\Users\Furkan\Desktop\output
 
 %%
 s=what;
@@ -101,24 +99,24 @@ for i = 1:length(OutMatFiles)
         MCDS.metadata.spatial_units ) );
 
     %% Glutamine
-%     k = find( MCDS.mesh.Z_coordinates == 10 );
-%     figure(4)
-%     contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(3).data(:,:,k) , 20 ) ;
+    k = find( MCDS.mesh.Z_coordinates == 10 );
+    figure(4)
+    contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(3).data(:,:,k) , 20 ) ;
+    
+    axis image
+    colorbar
+    xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) );
+    ylabel( sprintf( 'y (%s)' , MCDS.metadata.spatial_units) );
+    
+    title( sprintf('%s (%s) at t = %3.2f %s, z = %3.2f %s', MCDS.continuum_variables(3).name , ...
+        MCDS.continuum_variables(3).units , ...
+        MCDS.metadata.current_time , ...
+        MCDS.metadata.time_units, ...
+        MCDS.mesh.Z_coordinates(k), ...
+        MCDS.metadata.spatial_units ) );
 %     
-%     axis image
-%     colorbar
-%     xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) );
-%     ylabel( sprintf( 'y (%s)' , MCDS.metadata.spatial_units) );
 %     
-%     title( sprintf('%s (%s) at t = %3.2f %s, z = %3.2f %s', MCDS.continuum_variables(3).name , ...
-%         MCDS.continuum_variables(3).units , ...
-%         MCDS.metadata.current_time , ...
-%         MCDS.metadata.time_units, ...
-%         MCDS.mesh.Z_coordinates(k), ...
-%         MCDS.metadata.spatial_units ) );
-%     
-%     
-%     %% Lactate
+     %% Lactate
 %     k = find( MCDS.mesh.Z_coordinates == 10 );
 %     figure(5)
 %     contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(4).data(:,:,k) , 20 ) ;
@@ -134,14 +132,14 @@ for i = 1:length(OutMatFiles)
 %         MCDS.metadata.time_units, ...
 %         MCDS.mesh.Z_coordinates(k), ...
 %         MCDS.metadata.spatial_units ) );
-%     
-    edge_cell_energy(i) = MCDS.discrete_cells.custom.energy(4255);
-    edge_oxygen(i) = MCDS.discrete_cells.custom.sensed_oxygen(4255);
-    edge_glucose(i) = MCDS.discrete_cells.custom.sensed_glucose(4255);
-    
-    center_cell_energy(i) = MCDS.discrete_cells.custom.energy(4313);
-    center_oxygen(i) = MCDS.discrete_cells.custom.sensed_oxygen(4313);
-    center_glucose(i) = MCDS.discrete_cells.custom.sensed_glucose(4313);
+%      
+ %   edge_cell_energy(i) = MCDS.discrete_cells.custom.energy(8624);
+%    edge_oxygen(i) = MCDS.discrete_cells.custom.sensed_oxygen(8624);
+   % edge_glucose(i) = MCDS.discrete_cells.custom.sensed_glucose(8624);
+  %  
+  %  center_cell_energy(i) = MCDS.discrete_cells.custom.energy(9031);
+  %  center_oxygen(i) = MCDS.discrete_cells.custom.sensed_oxygen(9031);
+  %  center_glucose(i) = MCDS.discrete_cells.custom.sensed_glucose(9031);
 
 end 
 %%
