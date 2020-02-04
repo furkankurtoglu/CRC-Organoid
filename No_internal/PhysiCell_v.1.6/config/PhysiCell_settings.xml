@@ -74,12 +74,12 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-500</x_min>
-		<x_max>500</x_max>
+		<x_min>-700</x_min>
+		<x_max>700</x_max>
 		<y_min>-800</y_min>
 		<y_max>800</y_max>
-		<z_min>-500</z_min>
-		<z_max>500</z_max>
+		<z_min>-700</z_min>
+		<z_max>700</z_max>
 		<dx>20</dx>
 		<dy>20</dy>
 		<dz>20</dz>
@@ -168,8 +168,8 @@
 		<fibroblast_r10 type="double" units="dimensionless">0.0</fibroblast_r10>
 		<fibroblast_relative_adhesion type="double" units="dimensionless">0.05</fibroblast_relative_adhesion>
 		
-		<initial_tumor_radius type="double" units="dimensionless">500.0</initial_tumor_radius>
-		<freezing_edge type="double" units="dimensionless">500.0</freezing_edge>
+		<initial_tumor_radius type="double" units="dimensionless">600.0</initial_tumor_radius>
+		<freezing_edge type="double" units="dimensionless">600.0</freezing_edge>
 		<organoid_distance type="double" units="dimensionless">930.0</organoid_distance>
 		
 		<apoptosis_rate type="double" units="dimensionless">0</apoptosis_rate>
