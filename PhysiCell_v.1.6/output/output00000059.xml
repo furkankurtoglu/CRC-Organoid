@@ -11,9 +11,9 @@
 		</software>
 		<citation />
 		<current_time units="min">3540.000000</current_time>
-		<current_runtime units="sec">3361.175981</current_runtime>
-		<created>2019-09-17T08:03:07Z</created>
-		<last_modified>2019-09-17T08:03:07Z</last_modified>
+		<current_runtime units="sec">5544.365666</current_runtime>
+		<created>2020-01-21T17:06:49Z</created>
+		<last_modified>2020-01-21T17:06:49Z</last_modified>
 	</metadata>
 	<microenvironment>
 		<domain name="microenvironment">
@@ -45,13 +45,6 @@
 					<physical_parameter_set>
 						<conditions />
 						<diffusion_coefficient units="micron^2/min">39000.000000</diffusion_coefficient>
-						<decay_rate units="1/min">0.000100</decay_rate>
-					</physical_parameter_set>
-				</variable>
-				<variable name="glutamine" units="concentration" ID="3">
-					<physical_parameter_set>
-						<conditions />
-						<diffusion_coefficient units="micron^2/min">16111.000000</diffusion_coefficient>
 						<decay_rate units="1/min">0.000100</decay_rate>
 					</physical_parameter_set>
 				</variable>
@@ -92,14 +85,15 @@
 							<label index="27" size="1">energy</label>
 							<label index="28" size="1">cycle_energy_threshold</label>
 							<label index="29" size="1">death_energy_threshold</label>
-							<label index="30" size="1">G01S_thr</label>
-							<label index="31" size="1">k_aerobe</label>
-							<label index="32" size="1">k_anaerobe</label>
-							<label index="33" size="1">k_glut</label>
-							<label index="34" size="1">k_usage</label>
-							<label index="35" size="1">alpha</label>
-							<label index="36" size="1">beta</label>
-							<label index="37" size="1">gamma</label>
+							<label index="30" size="1">k_aerobe</label>
+							<label index="31" size="1">k_anaerobe</label>
+							<label index="32" size="1">k_usage</label>
+							<label index="33" size="1">alpha</label>
+							<label index="34" size="1">beta</label>
+							<label index="35" size="1">gamma</label>
+							<label index="36" size="1">internal_oxygen</label>
+							<label index="37" size="1">internal_glucose</label>
+							<label index="38" size="1">internal_lactate</label>
 						</labels>
 						<filename>output00000059_cells_physicell.mat</filename>
 					</simplified_data>

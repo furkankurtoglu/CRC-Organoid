@@ -121,7 +121,7 @@ void create_cell_types( void )
 	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
 
 	// set oxygen uptake / secretion parameters for the default cell type 
-	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 10; 
+	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 10.0; 
 	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 0.0; 
 	
@@ -266,7 +266,7 @@ void setup_microenvironment( void )
 	   double voxel_distance_to_tumor_center = (tumor_center[0]-xpos)*(tumor_center[0]-xpos)+(tumor_center[1]-ypos)*(tumor_center[1]-ypos)+(tumor_center[2]-zpos)*(tumor_center[2]-zpos);
 	   voxel_distance_to_tumor_center = pow(voxel_distance_to_tumor_center, 1.0/2.0);
 
-	   if (voxel_distance_to_tumor_center > 250)
+	   if (voxel_distance_to_tumor_center > parameters.doubles("freezing_edge"))
 	   {
 		microenvironment.add_dirichlet_node( n,dc_vector );
 	   }

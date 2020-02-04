@@ -3,7 +3,7 @@ close all
 clc
 
 %%
-cd C:\Users\Furkan\Desktop\output
+cd .\output\
 
 %%
 s=what;
@@ -99,22 +99,22 @@ for i = 1:length(OutMatFiles)
         MCDS.metadata.spatial_units ) );
 
     %% Glutamine
-    k = find( MCDS.mesh.Z_coordinates == 10 );
-    figure(4)
-    contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(3).data(:,:,k) , 20 ) ;
-    
-    axis image
-    colorbar
-    xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) );
-    ylabel( sprintf( 'y (%s)' , MCDS.metadata.spatial_units) );
-    
-    title( sprintf('%s (%s) at t = %3.2f %s, z = %3.2f %s', MCDS.continuum_variables(3).name , ...
-        MCDS.continuum_variables(3).units , ...
-        MCDS.metadata.current_time , ...
-        MCDS.metadata.time_units, ...
-        MCDS.mesh.Z_coordinates(k), ...
-        MCDS.metadata.spatial_units ) );
+%     k = find( MCDS.mesh.Z_coordinates == 10 );
+%     figure(4)
+%     contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), MCDS.continuum_variables(3).data(:,:,k) , 20 ) ;
 %     
+%     axis image
+%     colorbar
+%     xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) );
+%     ylabel( sprintf( 'y (%s)' , MCDS.metadata.spatial_units) );
+%     
+%     title( sprintf('%s (%s) at t = %3.2f %s, z = %3.2f %s', MCDS.continuum_variables(3).name , ...
+%         MCDS.continuum_variables(3).units , ...
+%         MCDS.metadata.current_time , ...
+%         MCDS.metadata.time_units, ...
+%         MCDS.mesh.Z_coordinates(k), ...
+%         MCDS.metadata.spatial_units ) );
+% %     
 %     
      %% Lactate
 %     k = find( MCDS.mesh.Z_coordinates == 10 );

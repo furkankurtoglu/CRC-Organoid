@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">5600</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">6800</max_time> <!-- 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	</overall>
@@ -100,12 +100,12 @@
 		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">60</interval>
+			<interval units="min">120</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">120</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -168,8 +168,9 @@
 		<fibroblast_r10 type="double" units="dimensionless">0.0</fibroblast_r10>
 		<fibroblast_relative_adhesion type="double" units="dimensionless">0.05</fibroblast_relative_adhesion>
 		
-		<initial_tumor_radius type="double" units="dimensionless">250</initial_tumor_radius>
-		<organoid_distance type="double" units="dimensionless">930</organoid_distance>
+		<initial_tumor_radius type="double" units="dimensionless">500.0</initial_tumor_radius>
+		<freezing_edge type="double" units="dimensionless">500.0</freezing_edge>
+		<organoid_distance type="double" units="dimensionless">930.0</organoid_distance>
 		
 		<apoptosis_rate type="double" units="dimensionless">0</apoptosis_rate>
 		
