@@ -86,7 +86,7 @@ using namespace PhysiCell;
 int main( int argc, char* argv[] )
 {
 	// load and parse settings file(s)
-	
+
 	bool XML_status = false; 
 	if( argc > 1 )
 	{ XML_status = load_PhysiCell_config_file( argv[1] ); }
@@ -226,19 +226,20 @@ int main( int argc, char* argv[] )
 		std::cout << e.what(); // information from length_error printed
 	}
 	
+
 	// save a final simulation snapshot 
-	
 	sprintf( filename , "%s/final" , PhysiCell_settings.folder.c_str() ); 
 	save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
 	
 	sprintf( filename , "%s/final.svg" , PhysiCell_settings.folder.c_str() ); 
 	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+ 
+    // sending e-mail 
+    system("python e_mail_sender.py");
 
-	
 	// timer 
 	
 	std::cout << std::endl << "Total simulation runtime: " << std::endl; 
 	BioFVM::display_stopwatch_value( std::cout , BioFVM::runtime_stopwatch_value() ); 
-
 	return 0; 
 }

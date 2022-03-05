@@ -125,7 +125,7 @@ void create_cell_types( void )
 	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 0.0; 
 	
-	cell_defaults.phenotype.secretion.uptake_rates[glucose_substrate_index] = 0.48; 
+	cell_defaults.phenotype.secretion.uptake_rates[glucose_substrate_index] = 0.315; 
 	cell_defaults.phenotype.secretion.secretion_rates[glucose_substrate_index] = 0.0; 
 	cell_defaults.phenotype.secretion.saturation_densities[glucose_substrate_index] = 0.0; 
 
@@ -249,12 +249,12 @@ void setup_microenvironment( void )
 	
 
 	// set initial conditions 
-	default_microenvironment_options.initial_condition_vector = {38.0,10.0}; 
+	default_microenvironment_options.initial_condition_vector = {9.0,1.0}; 
 	// initialize BioFVM 
 	initialize_microenvironment(); 	
 
 	std::vector<double> dc_vector( 2 );
-	dc_vector[0]=38.0;
+	dc_vector[0]=9.0;
 	dc_vector[1]=1.0;
 
 	for( int n = 0; n < microenvironment.mesh.voxels.size() ; n++ )

@@ -3,7 +3,7 @@ close all
 clc
 
 %%
-cd .\output\
+cd C:\Users\Furkan\Documents\GitHub\CRC-Organoid\No_internal\PhysiCell_v.1.6\output
 
 %%
 s=what;
